@@ -33,7 +33,7 @@ interface AppLayoutProps {
 
 const drawerWidth = 240;
 
-const AppLayout: React.FC<AppLayoutProps> = () => {
+const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -80,6 +80,9 @@ const AppLayout: React.FC<AppLayoutProps> = () => {
       </List>
     </div>
   );
+
+  // Check for console.log to debug
+  console.log("AppLayout rendering with children:", !!children);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -136,7 +139,7 @@ const AppLayout: React.FC<AppLayoutProps> = () => {
         }}
       >
         <Toolbar />
-        <Outlet />
+        {children ? children : <Outlet />}
       </Box>
     </Box>
   );

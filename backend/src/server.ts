@@ -9,6 +9,7 @@ import leaderboardRoutes from './routes/leaderboard';
 import carbonOffsetRoutes from './routes/carbonOffsets';
 import subscriptionRoutes from './routes/subscription';
 import premiumOffsetRoutes from './routes/premiumOffsets';
+import calculationRoutes from './routes/calculations';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/carbon-offsets', carbonOffsetRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/premium-offsets', premiumOffsetRoutes);
+app.use('/api/calculations', calculationRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecotrack')
