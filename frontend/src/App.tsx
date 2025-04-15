@@ -10,6 +10,12 @@ import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import CarbonCalculator from './pages/CarbonCalculator';
+import CarbonOffsetMarketplace from './pages/CarbonOffsetMarketplace';
+import Subscription from './pages/Subscription';
+import AutoOffset from './pages/AutoOffset';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import PrivateRoute from './components/PrivateRoute';
 
 // Import Roboto font
 import '@fontsource/roboto/300.css';
@@ -32,10 +38,6 @@ const theme = createTheme({
   },
 });
 
-// Placeholder components for auth (to be implemented later)
-const Login = () => <div>Login Page</div>;
-const Register = () => <div>Register Page</div>;
-
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -47,16 +49,29 @@ function App() {
           <Route path="/register" element={<Register />} />
           
           {/* Protected routes */}
-          <Route path="/" element={<AppLayout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <AppLayout />
+              </PrivateRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="add-activity" element={<AddActivity />} />
             <Route path="challenges" element={<Challenges />} />
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
-            <Route path="calculator" element={<CarbonCalculator />} />
+            <Route path="carbon-calculator" element={<CarbonCalculator />} />
+            <Route path="carbon-offset" element={<CarbonOffsetMarketplace />} />
+            <Route path="subscription" element={<Subscription />} />
+            <Route path="auto-offset" element={<AutoOffset />} />
           </Route>
+          
+          {/* Redirect to dashboard for unknown routes */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

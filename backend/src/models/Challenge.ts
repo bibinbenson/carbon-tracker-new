@@ -1,44 +1,29 @@
-import mongoose from 'mongoose';
-import { Challenge } from '../types';
+import mongoose, { Document, Schema } from 'mongoose';
 
-const challengeSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  category: {
-    type: String,
-    required: true,
-  },
-  points: {
-    type: Number,
-    required: true,
-  },
-  duration: {
-    type: Number,
-    required: true,
-  },
-  difficulty: {
-    type: String,
-    enum: ['easy', 'medium', 'hard'],
-    required: true,
-  },
-  participants: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }],
-  startDate: {
-    type: Date,
-    default: Date.now,
-  },
-  endDate: {
-    type: Date,
-    required: true,
-  },
+export interface IChallenge extends Document {
+  title: string;
+  description: string;
+  category: string;
+  points: number;
+  duration: number; // in days
+  startDate: Date;
+  endDate: Date;
+  participants: mongoose.Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const ChallengeSchema = new Schema<IChallenge>({
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  category: { type: String, required: true },
+  points: { type: Number, required: true },
+  duration: { type: Number, required: true },
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
+  participants: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+}, {
+  timestamps: true
 });
 
-export default mongoose.model<Challenge & mongoose.Document>('Challenge', challengeSchema); 
+export const Challenge = mongoose.model<IChallenge>('Challenge', ChallengeSchema); 

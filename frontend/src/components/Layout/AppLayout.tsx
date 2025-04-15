@@ -24,6 +24,7 @@ import {
   Person as PersonIcon,
   Settings as SettingsIcon,
   Calculate as CalculateIcon,
+  ShoppingCart as ShoppingCartIcon,
 } from '@mui/icons-material';
 
 interface AppLayoutProps {
@@ -32,7 +33,7 @@ interface AppLayoutProps {
 
 const drawerWidth = 240;
 
-const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
+const AppLayout: React.FC<AppLayoutProps> = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -47,7 +48,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     { text: 'Add Activity', icon: <AddIcon />, path: '/add-activity' },
     { text: 'Challenges', icon: <EmojiEventsIcon />, path: '/challenges' },
     { text: 'Leaderboard', icon: <LeaderboardIcon />, path: '/leaderboard' },
-    { text: 'Carbon Calculator', icon: <CalculateIcon />, path: '/calculator' },
+    { text: 'Carbon Calculator', icon: <CalculateIcon />, path: '/carbon-calculator' },
+    { text: 'Carbon Offsets', icon: <ShoppingCartIcon />, path: '/carbon-offset' },
     { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
     { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
   ];
@@ -113,7 +115,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           open={isMobile ? mobileOpen : true}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
           sx={{
             '& .MuiDrawer-paper': {
@@ -134,7 +136,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         }}
       >
         <Toolbar />
-        {children || <Outlet />}
+        <Outlet />
       </Box>
     </Box>
   );
