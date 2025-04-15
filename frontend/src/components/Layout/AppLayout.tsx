@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Box,
@@ -7,48 +8,49 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemButton,
   ListItemIcon,
   ListItemText,
   Toolbar,
   Typography,
   useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  Dashboard,
-  AddCircle,
-  EmojiEvents,
-  Leaderboard,
-  Person,
-  Settings,
+  Dashboard as DashboardIcon,
+  Add as AddIcon,
+  EmojiEvents as EmojiEventsIcon,
+  Leaderboard as LeaderboardIcon,
+  Person as PersonIcon,
+  Settings as SettingsIcon,
+  Calculate as CalculateIcon,
 } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
+
+interface AppLayoutProps {
+  children?: React.ReactNode;
+}
 
 const drawerWidth = 240;
 
-interface AppLayoutProps {
-  children: React.ReactNode;
-}
-
-const menuItems = [
-  { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
-  { text: 'Add Activity', icon: <AddCircle />, path: '/add-activity' },
-  { text: 'Challenges', icon: <EmojiEvents />, path: '/challenges' },
-  { text: 'Leaderboard', icon: <Leaderboard />, path: '/leaderboard' },
-  { text: 'Profile', icon: <Person />, path: '/profile' },
-  { text: 'Settings', icon: <Settings />, path: '/settings' },
-];
-
-export default function AppLayout({ children }: AppLayoutProps) {
+const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const menuItems = [
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: 'Add Activity', icon: <AddIcon />, path: '/add-activity' },
+    { text: 'Challenges', icon: <EmojiEventsIcon />, path: '/challenges' },
+    { text: 'Leaderboard', icon: <LeaderboardIcon />, path: '/leaderboard' },
+    { text: 'Carbon Calculator', icon: <CalculateIcon />, path: '/calculator' },
+    { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
+    { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+  ];
 
   const drawer = (
     <div>
@@ -59,23 +61,18 @@ export default function AppLayout({ children }: AppLayoutProps) {
       </Toolbar>
       <List>
         {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => {
-                navigate(item.path);
+          <ListItem
+            button
+            key={item.text}
+            onClick={() => {
+              navigate(item.path);
+              if (isMobile) {
                 setMobileOpen(false);
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  color: location.pathname === item.path ? theme.palette.primary.main : 'inherit',
-                }}
-              >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
+              }
+            }}
+          >
+            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.text} />
           </ListItem>
         ))}
       </List>
@@ -103,7 +100,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            {menuItems.find((item) => item.path === location.pathname)?.text || 'EcoTrack AI'}
+            EcoTrack AI
           </Typography>
         </Toolbar>
       </AppBar>
@@ -112,26 +109,18 @@ export default function AppLayout({ children }: AppLayoutProps) {
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
       >
         <Drawer
-          variant="temporary"
-          open={mobileOpen}
+          variant={isMobile ? 'temporary' : 'permanent'}
+          open={isMobile ? mobileOpen : true}
           onClose={handleDrawerToggle}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+            },
           }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
         >
           {drawer}
         </Drawer>
@@ -142,11 +131,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
           flexGrow: 1,
           p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          mt: '64px', // Height of AppBar
         }}
       >
-        {children}
+        <Toolbar />
+        {children || <Outlet />}
       </Box>
     </Box>
   );
-} 
+};
+
+export default AppLayout; 

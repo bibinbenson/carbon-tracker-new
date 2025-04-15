@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { green } from '@mui/material/colors';
 import AppLayout from './components/Layout/AppLayout';
@@ -9,6 +9,7 @@ import Challenges from './pages/Challenges';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import CarbonCalculator from './pages/CarbonCalculator';
 
 // Import Roboto font
 import '@fontsource/roboto/300.css';
@@ -39,66 +40,25 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
+      <BrowserRouter>
         <Routes>
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
           {/* Protected routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <AppLayout>
-                <Dashboard />
-              </AppLayout>
-            }
-          />
-          <Route
-            path="/add-activity"
-            element={
-              <AppLayout>
-                <AddActivity />
-              </AppLayout>
-            }
-          />
-          <Route
-            path="/challenges"
-            element={
-              <AppLayout>
-                <Challenges />
-              </AppLayout>
-            }
-          />
-          <Route
-            path="/leaderboard"
-            element={
-              <AppLayout>
-                <Leaderboard />
-              </AppLayout>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <AppLayout>
-                <Profile />
-              </AppLayout>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <AppLayout>
-                <Settings />
-              </AppLayout>
-            }
-          />
-          
-          {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<AppLayout />}>
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="add-activity" element={<AddActivity />} />
+            <Route path="challenges" element={<Challenges />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="calculator" element={<CarbonCalculator />} />
+          </Route>
         </Routes>
-      </Router>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }

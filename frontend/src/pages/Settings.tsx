@@ -17,6 +17,8 @@ import {
   Alert,
   IconButton,
   InputAdornment,
+  Snackbar,
+  SelectChangeEvent,
 } from '@mui/material';
 import {
   Notifications,
@@ -25,44 +27,58 @@ import {
   Security,
   Visibility,
   VisibilityOff,
+  Delete,
 } from '@mui/icons-material';
 
 const Settings = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [settings, setSettings] = useState({
-    emailNotifications: true,
-    pushNotifications: true,
-    weeklyReport: true,
-    challengeUpdates: true,
+    notifications: true,
+    emailUpdates: true,
+    darkMode: false,
     language: 'en',
-    theme: 'light',
     measurementUnit: 'metric',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error',
+  });
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, checked } = event.target;
-    setSettings(prev => ({
-      ...prev,
-      [name]: event.target.type === 'checkbox' ? checked : value,
-    }));
+  const handleSettingChange = (setting: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings({ ...settings, [setting]: event.target.checked });
   };
 
-  const handleSelectChange = (event: any) => {
-    const { name, value } = event.target;
-    setSettings(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleSelectChange = (setting: string) => (event: SelectChangeEvent) => {
+    setSettings({ ...settings, [setting]: event.target.value });
+  };
+
+  const handleTextChange = (setting: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings({ ...settings, [setting]: event.target.value });
   };
 
   const handleSave = () => {
-    // TODO: Implement actual save functionality
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+    // TODO: Implement API call to save settings
+    setSnackbar({
+      open: true,
+      message: 'Settings saved successfully',
+      severity: 'success',
+    });
+  };
+
+  const handleDeleteAccount = () => {
+    // TODO: Implement account deletion logic
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      setSnackbar({
+        open: true,
+        message: 'Account deletion request sent',
+        severity: 'success',
+      });
+    }
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -82,128 +98,93 @@ const Settings = () => {
       )}
 
       <Grid container spacing={3}>
-        {/* Notifications */}
-        <Grid item xs={12}>
+        {/* Notification Settings */}
+        <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Notifications color="primary" sx={{ mr: 1 }} />
+              <Notifications sx={{ mr: 1 }} />
               <Typography variant="h6">Notifications</Typography>
             </Box>
             <FormControlLabel
               control={
                 <Switch
-                  checked={settings.emailNotifications}
-                  onChange={handleChange}
-                  name="emailNotifications"
+                  checked={settings.notifications}
+                  onChange={handleSettingChange('notifications')}
                 />
               }
-              label="Email Notifications"
+              label="Enable notifications"
             />
             <FormControlLabel
               control={
                 <Switch
-                  checked={settings.pushNotifications}
-                  onChange={handleChange}
-                  name="pushNotifications"
+                  checked={settings.emailUpdates}
+                  onChange={handleSettingChange('emailUpdates')}
                 />
               }
-              label="Push Notifications"
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.weeklyReport}
-                  onChange={handleChange}
-                  name="weeklyReport"
-                />
-              }
-              label="Weekly Progress Report"
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.challengeUpdates}
-                  onChange={handleChange}
-                  name="challengeUpdates"
-                />
-              }
-              label="Challenge Updates"
+              label="Email updates"
             />
           </Paper>
         </Grid>
 
-        {/* Preferences */}
-        <Grid item xs={12}>
+        {/* Display Settings */}
+        <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Language color="primary" sx={{ mr: 1 }} />
-              <Typography variant="h6">Preferences</Typography>
+              <Language sx={{ mr: 1 }} />
+              <Typography variant="h6">Display & Language</Typography>
             </Box>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Language</InputLabel>
-                  <Select
-                    value={settings.language}
-                    label="Language"
-                    name="language"
-                    onChange={handleSelectChange}
-                  >
-                    <MenuItem value="en">English</MenuItem>
-                    <MenuItem value="es">Español</MenuItem>
-                    <MenuItem value="fr">Français</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Measurement Unit</InputLabel>
-                  <Select
-                    value={settings.measurementUnit}
-                    label="Measurement Unit"
-                    name="measurementUnit"
-                    onChange={handleSelectChange}
-                  >
-                    <MenuItem value="metric">Metric (kg)</MenuItem>
-                    <MenuItem value="imperial">Imperial (lbs)</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Theme</InputLabel>
-                  <Select
-                    value={settings.theme}
-                    label="Theme"
-                    name="theme"
-                    onChange={handleSelectChange}
-                  >
-                    <MenuItem value="light">Light</MenuItem>
-                    <MenuItem value="dark">Dark</MenuItem>
-                    <MenuItem value="system">System</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Language</InputLabel>
+              <Select
+                value={settings.language}
+                onChange={handleSelectChange('language')}
+                label="Language"
+              >
+                <MenuItem value="en">English</MenuItem>
+                <MenuItem value="es">Spanish</MenuItem>
+                <MenuItem value="fr">French</MenuItem>
+                <MenuItem value="de">German</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Measurement Unit</InputLabel>
+              <Select
+                value={settings.measurementUnit}
+                onChange={handleSelectChange('measurementUnit')}
+                label="Measurement Unit"
+              >
+                <MenuItem value="metric">Metric (kg, km)</MenuItem>
+                <MenuItem value="imperial">Imperial (lbs, miles)</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={settings.darkMode}
+                  onChange={handleSettingChange('darkMode')}
+                />
+              }
+              label="Dark Mode"
+            />
           </Paper>
         </Grid>
 
-        {/* Security */}
+        {/* Security Settings */}
         <Grid item xs={12}>
           <Paper sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Security color="primary" sx={{ mr: 1 }} />
+              <Security sx={{ mr: 1 }} />
               <Typography variant="h6">Security</Typography>
             </Box>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Current Password"
                   type={showPassword ? 'text' : 'password'}
                   name="currentPassword"
                   value={settings.currentPassword}
-                  onChange={handleChange}
+                  onChange={handleTextChange('currentPassword')}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -222,7 +203,7 @@ const Settings = () => {
                   type={showPassword ? 'text' : 'password'}
                   name="newPassword"
                   value={settings.newPassword}
-                  onChange={handleChange}
+                  onChange={handleTextChange('newPassword')}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -232,24 +213,57 @@ const Settings = () => {
                   type={showPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={settings.confirmPassword}
-                  onChange={handleChange}
+                  onChange={handleTextChange('confirmPassword')}
                 />
               </Grid>
             </Grid>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2 }}
+              onClick={handleSave}
+            >
+              Update Password
+            </Button>
+          </Paper>
+        </Grid>
+
+        {/* Account Deletion */}
+        <Grid item xs={12}>
+          <Paper sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Delete sx={{ mr: 1, color: 'error.main' }} />
+              <Typography variant="h6" color="error">
+                Delete Account
+              </Typography>
+            </Box>
+            <Typography color="text.secondary" paragraph>
+              Once you delete your account, there is no going back. Please be certain.
+            </Typography>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleDeleteAccount}
+            >
+              Delete Account
+            </Button>
           </Paper>
         </Grid>
       </Grid>
 
-      <Box sx={{ mt: 3, mb: 4, display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSave}
-          size="large"
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
         >
-          Save Changes
-        </Button>
-      </Box>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
